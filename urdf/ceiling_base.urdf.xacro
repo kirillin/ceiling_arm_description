@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<robot name="ceiling_base_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:property name="PI" value="3.1415926535897931" />
+
+    <xacro:macro name="ceiling_base" params="prefix parent *origin">
+
+        <link name="${prefix}base_long_link">
+            <inertial>
+                <mass value="25.0" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="20.0 0.1 0.01" />
+                </geometry>
+                <material name="Grey">
+                    <color rgba="0.1 0.1 0.1 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0 " />
+                <geometry>
+                    <box size="20.0 0.1 0.01" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="${prefix}long_link">
+            <inertial>
+                <mass value="25.0" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.1 0.1 0.01" />
+                </geometry>
+                <material name="Grey2">
+                    <color rgba="0.2 0.2 0.2 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0 " />
+                <geometry>
+                    <box size="0.1 0.1 0.01" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="${prefix}base_short_link">
+            <inertial>
+                <mass value="25.0" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+            </inertial>
+            <visual>
+                <origin xyz="2.4 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="5.0 0.1 0.01" />
+                </geometry>
+                <material name="Grey">
+                    <color rgba="0.0 0.0 0.0 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="2.4 0 0" rpy="0 0 0 " />
+                <geometry>
+                    <box size="5.0 0.1 0.01" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="${prefix}short_link">
+            <inertial>
+                <mass value="25.0" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.1 0.1 0.01" />
+                </geometry>
+                <material name="Grey2">
+                    <color rgba="0.3 0.3 0.3 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0 " />
+                <geometry>
+                    <box size="0.1 0.1 0.01" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="${prefix}connector_link">
+            <inertial>
+                <mass value="1.0" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.1 0.1 0.01" />
+                </geometry>
+                <material name="Red">
+                    <color rgba="1.0 0.0 0.0 1" />
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0 " />
+                <geometry>
+                    <box size="0.1 0.1 0.01" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${prefix}base_joint" type="fixed">
+            <!-- TODO add origin from params -->
+            <xacro:insert_block name="origin"/>
+            <!-- <origin rpy="0 0 0" xyz="0 0 0.0" />  -->
+            <parent link="${parent}" />
+            <child link="${prefix}base_long_link" />
+        </joint>
+
+        <joint name="${prefix}long_joint" type="prismatic">
+            <origin rpy="0 0 0" xyz="0 0.0 -0.01" />
+            <parent link="${prefix}base_long_link" />
+            <child link="${prefix}long_link" />
+            <limit effort="30" velocity="1.0" lower="-10" upper="10" />
+            <axis xyz="1 0 0"/>
+        </joint>     
+
+        <joint name="${prefix}base_short_joint" type="fixed">
+            <origin rpy="0 0 ${PI/2}" xyz="0 0.0 -0.01" />
+            <parent link="${prefix}long_link" />
+            <child link="${prefix}base_short_link" />
+        </joint>
+
+        <joint name="${prefix}short_joint" type="prismatic">
+            <origin rpy="0 0 -${PI/2}" xyz="0 0.0 -0.01" />
+            <parent link="${prefix}base_short_link" />
+            <child link="${prefix}short_link" />
+            <limit effort="100000.0" velocity="1000.0" lower="0.0" upper="5.0" /> <!-- lower="0.1"
+            upper="0.5" -->
+            <axis xyz="0 1 0" />
+        </joint>
+
+        <joint name="${prefix}connector_joint" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 -0.01" />
+            <parent link="${prefix}short_link" />
+            <child link="${prefix}connector_link" />
+        </joint>
+
+
+    </xacro:macro>
+
+    <xacro:macro name="ros_control">
+        <gazebo>
+          <plugin name="ros_control" filename="libgazebo_ros_control.so">
+                <robotParam>robot_description</robotParam>
+            <controlPeriod>0.001</controlPeriod>
+              <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+                <legacyModeNS>true</legacyModeNS>
+          </plugin>
+        </gazebo>
+    </xacro:macro>
+
+</robot>
