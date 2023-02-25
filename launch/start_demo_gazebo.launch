@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- <arg name="hardware_interface" default="EffortJointInterface"/> -->
+    <!-- <arg name="hardware_interface" default="PositionJointInterface"/> -->
+
+    <param name="robot_description" command="$(find xacro)/xacro '$(find ceiling_arm_description)/robots/ceiling_base.urdf.xacro'" />
+ 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+    <!-- start gazebo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false" />
+        <arg name="use_sim_time" value="true" />
+        <arg name="gui" value="true" />
+        <arg name="headless" value="false" />
+        <arg name="debug" value="false" />
+    </include>
+    
+    <!-- spawn robot model -->
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot_ceiling_base" respawn="false" output="screen" />
+
+    <!-- start controllers -->
+    <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" args=" joint_state_controller" />
+
+    <rosparam file="$(find ceiling_arm_description)/config/controller.yaml" command="load" subst_value="true"/>
+    <node name="robot_ceiling_base_controller" pkg="controller_manager" type="spawner" output="screen" 
+        args="
+            ceiling_base_controller
+        "
+    />
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ceiling_arm_description)/rviz/config.rviz"/>
+
+</launch>

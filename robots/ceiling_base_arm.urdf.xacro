@@ -1,17 +1,37 @@
 <?xml version="1.0"?>
-<robot name="ceiling" xmlns:xacro="http://wiki.ros.org/xacro">
+<robot name="ceiling_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+	
+	<xacro:arg name="prefix" default="" />
+	<xacro:arg name="hardware_interface" default="PositionJointInterface"/>
 
 	<xacro:property name="PI" value="3.1415926535897931" />
+    <xacro:property name="arm_position_x" value="0"/>
+    <xacro:property name="arm_position_y" value="0"/>
+    <xacro:property name="arm_position_z" value="0"/>
+    <xacro:property name="arm_orientation_r" value="0"/>
+    <xacro:property name="arm_orientation_p" value="0"/>
+    <xacro:property name="arm_orientation_y" value="0"/>
 
-	<!-- Import summit XL base elements -->
 	<xacro:include filename="$(find ceiling_arm_description)/urdf/ceiling_base.urdf.xacro" />
+
+	<xacro:include filename="$(find ur_description)/urdf/inc/ur10_macro.xacro" />
 
 	<link name="world">
 	</link>
 
-	<xacro:ceiling_base prefix="test_" parent="world">
+	<xacro:ceiling_base prefix="" parent="world" hardware_interface="$(arg hardware_interface)" >
 		<origin xyz="0.0 0.0 1.0" rpy="0.0 0.0 0.0"/>
 	</xacro:ceiling_base>
+
+	<xacro:ur10_robot prefix="arm_" transmission_hw_interface="hardware_interface/$(arg hardware_interface)">
+	</xacro:ur10_robot>
+
+	<joint name="arm_base_joint" type="fixed">
+		<origin xyz="0 0 0" rpy="${PI} 0 0"/>
+		<parent link="connector_link" />
+		<child link="arm_base_link" />
+	</joint>
+
 
 	<xacro:ros_control />
 

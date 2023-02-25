@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <param name="robot_description" command="$(find xacro)/xacro '$(find ceiling_arm_description)/robots/ceiling_base.urdf.xacro'" />
+
+    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+  
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+  
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ceiling_arm_description)/rviz/config.rviz"/>
+
+</launch>

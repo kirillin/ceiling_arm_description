@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="ceiling_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+	
+	<xacro:arg name="prefix" default="" />
+	<xacro:arg name="hardware_interface" default="PositionJointInterface"/>
+
+	<xacro:property name="PI" value="3.1415926535897931" />
+
+	<xacro:include filename="$(find ceiling_arm_description)/urdf/ceiling_base.urdf.xacro" />
+
+	<link name="world">
+	</link>
+
+	<xacro:ceiling_base prefix="$(arg prefix)" parent="world" hardware_interface="$(arg hardware_interface)" >
+		<origin xyz="0.0 0.0 1.0" rpy="0.0 0.0 0.0"/>
+	</xacro:ceiling_base>
+
+	<xacro:ros_control />
+
+</robot>

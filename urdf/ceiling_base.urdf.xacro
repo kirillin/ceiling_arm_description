@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<robot name="ceiling_base_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+<robot name="robot_ceiling_base" xmlns:xacro="http://wiki.ros.org/xacro">
 
     <xacro:property name="PI" value="3.1415926535897931" />
 
-    <xacro:macro name="ceiling_base" params="prefix parent *origin">
+    <xacro:macro name="ceiling_base" params="prefix parent hardware_interface:=PositionJointInterface *origin">
 
         <link name="${prefix}base_long_link">
             <inertial>
-                <mass value="25.0" />
+                <mass value="1.0" />
                 <origin xyz="0 0 0" />
-                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+                <inertia ixx="1" ixy="0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.02" />
             </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
@@ -30,9 +30,9 @@
 
         <link name="${prefix}long_link">
             <inertial>
-                <mass value="25.0" />
+                <mass value="1.0" />
                 <origin xyz="0 0 0" />
-                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+                <inertia ixx="0.02" ixy="0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.02" />
             </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
@@ -53,9 +53,9 @@
 
         <link name="${prefix}base_short_link">
             <inertial>
-                <mass value="25.0" />
+                <mass value="1.0" />
                 <origin xyz="0 0 0" />
-                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+                <inertia ixx="0.5" ixy="0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.02" />
             </inertial>
             <visual>
                 <origin xyz="2.4 0 0" rpy="0 0 0" />
@@ -76,9 +76,9 @@
 
         <link name="${prefix}short_link">
             <inertial>
-                <mass value="25.0" />
+                <mass value="1.0" />
                 <origin xyz="0 0 0" />
-                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+                <inertia ixx="0.5" ixy="0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.02" />
             </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
@@ -101,7 +101,7 @@
             <inertial>
                 <mass value="1.0" />
                 <origin xyz="0 0 0" />
-                <inertia ixx="1.391" ixy="0.004" ixz="0.0" iyy="6.853" iyz="0.0" izz="6.125" />
+                <inertia ixx="1e-6" ixy="0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6" />
             </inertial>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
@@ -121,9 +121,7 @@
         </link>
 
         <joint name="${prefix}base_joint" type="fixed">
-            <!-- TODO add origin from params -->
-            <xacro:insert_block name="origin"/>
-            <!-- <origin rpy="0 0 0" xyz="0 0 0.0" />  -->
+            <xacro:insert_block name="origin" />
             <parent link="${parent}" />
             <child link="${prefix}base_long_link" />
         </joint>
@@ -132,9 +130,10 @@
             <origin rpy="0 0 0" xyz="0 0.0 -0.01" />
             <parent link="${prefix}base_long_link" />
             <child link="${prefix}long_link" />
-            <limit effort="30" velocity="1.0" lower="-10" upper="10" />
-            <axis xyz="1 0 0"/>
-        </joint>     
+            <dynamics damping="1" friction="1"/>
+            <limit effort="300" velocity="5.0" lower="-10" upper="10" />
+            <axis xyz="1 0 0" />
+        </joint>
 
         <joint name="${prefix}base_short_joint" type="fixed">
             <origin rpy="0 0 ${PI/2}" xyz="0 0.0 -0.01" />
@@ -146,8 +145,8 @@
             <origin rpy="0 0 -${PI/2}" xyz="0 0.0 -0.01" />
             <parent link="${prefix}base_short_link" />
             <child link="${prefix}short_link" />
-            <limit effort="100000.0" velocity="1000.0" lower="0.0" upper="5.0" /> <!-- lower="0.1"
-            upper="0.5" -->
+            <dynamics damping="1" friction="1"/>
+            <limit effort="300" velocity="5.0" lower="0.0" upper="5.0" />
             <axis xyz="0 1 0" />
         </joint>
 
@@ -157,17 +156,36 @@
             <child link="${prefix}connector_link" />
         </joint>
 
+        <transmission name="${prefix}long_joint_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${prefix}long_joint">
+                <hardwareInterface>hardware_interface/${hardware_interface}</hardwareInterface>
+            </joint>
+            <actuator name="${prefix}long_motor">
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+        <transmission name="${prefix}short_joint_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${prefix}short_joint">
+                <hardwareInterface>hardware_interface/${hardware_interface}</hardwareInterface>
+            </joint>
+            <actuator name="${prefix}short_motor">
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
 
     </xacro:macro>
 
     <xacro:macro name="ros_control">
         <gazebo>
-          <plugin name="ros_control" filename="libgazebo_ros_control.so">
+            <plugin name="ros_control" filename="libgazebo_ros_control.so">
                 <robotParam>robot_description</robotParam>
-            <controlPeriod>0.001</controlPeriod>
-              <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+                <controlPeriod>0.001</controlPeriod>
+                <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
                 <legacyModeNS>true</legacyModeNS>
-          </plugin>
+            </plugin>
         </gazebo>
     </xacro:macro>
 
