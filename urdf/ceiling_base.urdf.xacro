@@ -28,9 +28,9 @@
             </collision>
         </link>
 
-        <!-- <gazebo reference="${prefix}base_long_link">
-            <material>Gazebo/Grey</material>
-        </gazebo> -->
+        <gazebo reference="${prefix}base_long_link">
+            <material>Gazebo/Gray</material>
+        </gazebo>
 
         <link name="${prefix}long_link">
             <inertial>
@@ -78,9 +78,9 @@
             </collision>
         </link>
 
-        <!-- <gazebo reference="${prefix}base_short_link">
-            <material>Gazebo/White</material>
-        </gazebo> -->
+        <gazebo reference="${prefix}base_short_link">
+            <material>Gazebo/Gray</material>
+        </gazebo>
 
         <link name="${prefix}short_link">
             <inertial>
