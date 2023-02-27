@@ -28,6 +28,10 @@
             </collision>
         </link>
 
+        <!-- <gazebo reference="${prefix}base_long_link">
+            <material>Gazebo/Grey</material>
+        </gazebo> -->
+
         <link name="${prefix}long_link">
             <inertial>
                 <mass value="1.0" />
@@ -58,21 +62,25 @@
                 <inertia ixx="0.5" ixy="0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.02" />
             </inertial>
             <visual>
-                <origin xyz="2.4 0 0" rpy="0 0 0" />
+                <origin xyz="1.3 0 0" rpy="0 0 0" />
                 <geometry>
-                    <box size="5.0 0.1 0.01" />
+                    <box size="3.1 0.1 0.01" />
                 </geometry>
                 <material name="Grey">
                     <color rgba="0.0 0.0 0.0 1" />
                 </material>
             </visual>
             <collision>
-                <origin xyz="2.4 0 0" rpy="0 0 0 " />
+                <origin xyz="1.3 0 0" rpy="0 0 0 " />
                 <geometry>
-                    <box size="5.0 0.1 0.01" />
+                    <box size="3.1 0.1 0.01" />
                 </geometry>
             </collision>
         </link>
+
+        <!-- <gazebo reference="${prefix}base_short_link">
+            <material>Gazebo/White</material>
+        </gazebo> -->
 
         <link name="${prefix}short_link">
             <inertial>
@@ -142,7 +150,7 @@
         </joint>
 
         <joint name="${prefix}short_joint" type="prismatic">
-            <origin rpy="0 0 -${PI/2}" xyz="0 0.0 -0.01" />
+            <origin rpy="0 0 -${PI/2}" xyz="-0.2 0.0 -0.01" />
             <parent link="${prefix}base_short_link" />
             <child link="${prefix}short_link" />
             <dynamics damping="1" friction="1"/>
