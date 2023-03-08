@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<robot name="ceiling_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+	
+	<xacro:arg name="prefix" default="" />
+	<xacro:arg name="hardware_interface" default="PositionJointInterface"/>
+
+	<xacro:property name="PI" value="3.1415926535897931" />
+    <xacro:property name="robot_position_x" value="0"/>
+    <xacro:property name="robot_position_y" value="0"/>
+    <xacro:property name="robot_position_z" value="0"/>
+    <xacro:property name="robot_orientation_r" value="0"/>
+    <xacro:property name="robot_orientation_p" value="0"/>
+    <xacro:property name="robot_orientation_y" value="0"/>
+
+	<xacro:include filename="$(find ceiling_arm_description)/urdf/ceiling_base.urdf.xacro" />
+
+	<xacro:include filename="$(find ur_description)/urdf/inc/ur10_macro.xacro" />
+
+	<xacro:include filename="$(find vacuum_gripper_gazebo)/urdf/vacuum_gripper.urdf.xacro" />
+
+	<link name="world">
+	</link>
+
+	<xacro:ceiling_base prefix="$(arg prefix)" parent="world" hardware_interface="$(arg hardware_interface)" >
+		<origin xyz="${robot_position_x} ${robot_position_y} ${robot_position_z}" rpy="${robot_orientation_r} ${robot_orientation_p} ${robot_orientation_y}"/>		
+	</xacro:ceiling_base>
+
+	<xacro:ur10_robot prefix="$(arg prefix)arm_" transmission_hw_interface="hardware_interface/$(arg hardware_interface)">
+	</xacro:ur10_robot>
+
+	<joint name="arm_base_joint" type="fixed">
+		<origin xyz="0 0 0" rpy="${PI} 0 0"/>
+		<parent link="connector_link" />
+		<child link="arm_base_link" />
+	</joint>
+
+	<!-- <xacro:vacuum_gripper prefix="$(arg prefix)gripper_" parent="$(arg prefix)arm_wrist_3_link">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+	</xacro:vacuum_gripper> -->
+
+	<!-- <xacro:create_vacuum_gripper wrist_link="$(arg prefix)arm_wrist_3_link" link_no="1">
+    	<origin xyz="0 0 0.1" rpy="0 0 0" />
+	</xacro:create_vacuum_gripper> -->
+
+	<xacro:property name="height" value="-0.5"/>
+	<xacro:property name="offset" value="0.04"/>
+	<xacro:property name="length" value="0.1"/>
+  
+	<joint name="gripper_joint" type="revolute">
+	  <axis xyz="1 0 0" />
+	  <origin xyz="5 5 ${height+offset}" rpy="${pi} 0 0"/>
+	  <parent link="world"/>
+	  <child link="vacuum_gripper"/>
+	  <limit effort="30" velocity="1.0" lower="0" upper="0"/>
+	  <dynamics damping="0.0"/>
+	</joint>
+  
+	<link name="vacuum_gripper">
+	  <gravity>0</gravity>
+	  <visual>
+		<origin xyz="0 0 -${length/2}" rpy="0 0 0"/>
+		<geometry>
+		  <cylinder radius="0.05" length="${length}"/>
+		</geometry>
+	  </visual>
+	  <inertial>
+		<mass value="0.0001"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+	  </inertial>
+	</link>
+  
+	<gazebo>
+	  <plugin name="gazebo_ros_vacuum_gripper_debugger" filename="libgazebo_ros_vacuum_gripper.so">
+		<robotNamespace>/vacuum_gripper</robotNamespace>
+		<bodyName>vacuum_gripper</bodyName>
+		<topicName>grasping</topicName>
+		<maxForce>50</maxForce>
+		<maxDistance>0.5</maxDistance>
+		<minDistance>0.01</minDistance>
+	  </plugin>
+	</gazebo>
+  
+	<gazebo reference="vacuum_gripper">
+	  <mu1>0.2</mu1>
+	  <mu2>0.2</mu2>
+	  <material>Gazebo/Grey</material>
+	</gazebo>
+
+	<xacro:ros_control />
+
+</robot>

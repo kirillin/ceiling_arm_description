@@ -1,12 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     
-    <!-- <arg name="prefix" default=""/>
-    <arg name="arm_model" default="ur10"/>
-    <arg name="arm_prefix" default="$(arg prefix)arm"/>
-    <arg name="use_trajectory_controller" default="true"/> -->
-
-    <param name="robot_description" command="$(find xacro)/xacro '$(find ceiling_arm_description)/robots/ceiling_base_arm.urdf.xacro'" />
+    <param name="robot_description" command="$(find xacro)/xacro '$(find ceiling_arm_description)/robots/ceiling_base_arm_vacuum_gripper.urdf.xacro'" />
  
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
@@ -21,7 +16,7 @@
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" args="-z 1.0 -urdf -param robot_description -model ceiling_robot" respawn="false" output="screen" />
  
     <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" args="joint_state_controller" />
+    output="screen" args=" joint_state_controller" />
 
     <!-- ceiling base controller -->
     <rosparam file="$(find ceiling_arm_description)/config/controller.yaml" command="load" subst_value="true"/>
@@ -42,4 +37,8 @@
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ceiling_arm_description)/rviz/config.rviz"/>
 
+    <!-- add box to test grasping -->
+    <param name="object_description" command="$(find xacro)/xacro $(find ceiling_arm_description)/resources/box.urdf" />
+    <node name="spawn_object" pkg="gazebo_ros" type="spawn_model" args="-x 1.0 -y 0.0 -z 0.15 -urdf -param object_description -model box" respawn="false" output="screen" />
+  
 </launch>

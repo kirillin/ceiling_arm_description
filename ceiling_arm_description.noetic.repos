@@ -1,0 +1,9 @@
+repositories:
+  # vacuum_gripper_gazebo:
+  #   type: git
+  #   url: https://github.com/kirillin/vacuum_gripper_gazebo.git
+  #   version: master
+  hook_gripper_gazebo:
+    type: git
+    url: https://github.com/kirillin/hook_gripper_gazebo.git
+    version: master    

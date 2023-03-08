@@ -18,7 +18,7 @@
     </include>
     
     <!-- spawn robot model -->
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot_ceiling_base" respawn="false" output="screen" />
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" args="-z 1.5 -urdf -param robot_description -model robot_ceiling_base" respawn="false" output="screen" />
 
     <!-- start controllers -->
     <node name="state_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
