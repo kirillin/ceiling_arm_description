@@ -45,7 +45,7 @@
 
 	<!-- connect The Hook gripper -->
 	<!-- attention! check for prefix. Tested well only with empty prefix -->
-	<xacro:hook_gripper prefix="" parent="arm_wrist_3_link" obj="box" obj_link="box1">
+	<xacro:hook_gripper prefix="" parent="arm_wrist_3_link" obj="bag" obj_link="bag">
 		<origin xyz="0 0 0" rpy="0 0 1.57"/>
 	</xacro:hook_gripper>
 
